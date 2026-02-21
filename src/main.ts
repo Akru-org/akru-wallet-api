@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
-import * as admin from 'firebase-admin';
 import type { Connection } from 'mongoose';
 import { AppModule } from './app.module';
+import { initFirebase } from './config/firebase.config';
 import { paths } from './paths';
 
 async function bootstrap() {
@@ -19,9 +19,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  if (admin.apps.length === 0 && config.get('GOOGLE_APPLICATION_CREDENTIALS')) {
-    admin.initializeApp({ credential: admin.credential.applicationDefault() });
-  }
+  initFirebase(config.get('GOOGLE_APPLICATION_CREDENTIALS'));
 
   const port = config.get<number>('PORT') || 3000;
   await app.listen(port);
