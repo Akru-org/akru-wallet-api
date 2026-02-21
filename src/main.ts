@@ -1,9 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { ConfigService } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
+import * as admin from 'firebase-admin';
+import * as fs from 'fs';
 import type { Connection } from 'mongoose';
 import { AppModule } from './app.module';
-import { initFirebase } from './config/firebase.config';
 import { paths } from './paths';
 
 async function bootstrap() {
@@ -19,7 +20,29 @@ async function bootstrap() {
     credentials: true,
   });
 
-  initFirebase(config.get('GOOGLE_APPLICATION_CREDENTIALS'));
+  const credentialsJson = config.get<string>('GOOGLE_APPLICATION_CREDENTIALS');
+  const credentialsPath = config.get<string>('GOOGLE_APPLICATION_CREDENTIALS_PATH');
+
+  if (!admin.apps.length) {
+    if (credentialsJson) {
+      console.log('[Firebase Admin] Inicializando desde JSON en variable de entorno');
+      admin.initializeApp({
+        credential: admin.credential.cert(JSON.parse(credentialsJson) as admin.ServiceAccount),
+      });
+    } else if (credentialsPath) {
+      console.log('[Firebase Admin] Inicializando desde archivo local');
+      const serviceAccount = JSON.parse(
+        fs.readFileSync(credentialsPath, 'utf8'),
+      ) as admin.ServiceAccount;
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+    } else {
+      throw new Error(
+        '[Firebase Admin] No se encontraron credenciales. Define GOOGLE_APPLICATION_CREDENTIALS (JSON completo) o GOOGLE_APPLICATION_CREDENTIALS_PATH (ruta al archivo).',
+      );
+    }
+  }
 
   const port = config.get<number>('PORT') || 3000;
   await app.listen(port);
