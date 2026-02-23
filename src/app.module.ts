@@ -6,6 +6,7 @@ import { HealthModule } from './health/health.module';
 import { UsersModule } from './users/users.module';
 import { TransactionsModule } from './transactions/transactions.module';
 import { LedgerModule } from './ledger/ledger.module';
+import { AssetsModule } from './assets/assets.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { LedgerModule } from './ledger/ledger.module';
     }),
     HealthModule,
     UsersModule,
+    AssetsModule,
     TransactionsModule,
     LedgerModule,
   ],

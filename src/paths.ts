@@ -7,6 +7,7 @@ const API = '';
 export const ENDPOINTS = {
   HEALTH: { BASE: '/' },
   USERS: { BASE: '/users' },
+  ASSETS: { BASE: '/assets' },
   // TRANSACTIONS: { BASE: '/transactions' },
   // LEDGER: { BASE: '/ledger' },
 };
@@ -14,4 +15,5 @@ export const ENDPOINTS = {
 export const paths = {
   health: `${API}${ENDPOINTS.HEALTH.BASE}`,
   users: `${API}${ENDPOINTS.USERS.BASE}`,
-} ;
+  assets: `${API}${ENDPOINTS.ASSETS.BASE}`,
+};
